@@ -1,0 +1,19 @@
+services:
+  # Development Service (with Live Reload / HMR)
+  dev:
+    image: node:20-alpine
+    working_dir: /app
+    ports:
+      - "80:5173" # Maps Localhost Port 80 to Vite's 5173
+    volumes:
+      - .:/app
+      - /app/node_modules # Prevents local node_modules from being overwritten
+    environment:
+      - VITE_HOST=0.0.0.0 # Ensures Vite is accessible outside the container
+    command: npm run dev -- --host 0.0.0.0
+
+  # Production Preview Service (Nginx)
+  app:
+    build: .
+    ports:
+      - "8080:80"
