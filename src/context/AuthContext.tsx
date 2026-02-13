@@ -1,9 +1,18 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+interface User {
+    id: string | number;
+    email: string;
+    name: string;
+    role?: string;
+    password?: string;
+}
+
 interface AuthContextType {
-    user: any;
+    user: User | null;
     login: (email: string, password: string) => Promise<boolean>;
-    signup: (userdata: any) => Promise<boolean>;
+    signup: (userdata: User) => Promise<boolean>;
     logout: () => void;
     isAuthenticated: boolean;
     loading: boolean;
@@ -12,7 +21,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -26,8 +35,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const login = async (email: string, password: string) => {
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const foundUser = users.find((u: any) => u.email === email && u.password === password);
+        const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
+        const foundUser = users.find((u: User) => u.email === email && u.password === password);
         if (foundUser) {
             localStorage.setItem('currentUser', JSON.stringify(foundUser));
             setUser(foundUser);
@@ -37,9 +46,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return false;
     };
 
-    const signup = async (userData: any) => {
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        if (users.find((u: any) => u.email === userData.email)) {
+    const signup = async (userData: User) => {
+        const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
+        if (users.find((u: User) => u.email === userData.email)) {
             return false; // User already exists
         }
         const newUsers = [...users, userData];
