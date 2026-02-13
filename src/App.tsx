@@ -8,7 +8,12 @@ import Dashboard from "./pages/Dashboard"
 import { AuthProvider, useAuth } from "./context/AuthContext"
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
+
+    if (loading) {
+        return <div className="loading-screen">Loading...</div>; // Or a proper spinner
+    }
+
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
     }

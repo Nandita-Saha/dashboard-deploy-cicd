@@ -25,7 +25,7 @@ export default function Login() {
         <div className="auth-container">
             <div className="auth-card">
                 <div className="auth-header">
-                    <h1 className="auth-title">Welcome Back</h1>
+                    <h1 className="auth-title">Welcome</h1>
                     <p className="auth-subtitle">Welcome back! Please enter your details.</p>
                 </div>
                 <form onSubmit={handleSubmit}>

@@ -15,7 +15,7 @@ const DashboardLayout: React.FC = () => {
     <div className="dashboard-layout">
       <aside className="sidebar">
         <div className="sidebar-logo">
-          ADMIN<span>Dash</span>
+          ADMIN<span>D</span>
         </div>
         <nav className="sidebar-nav">
           <NavLink to="/dashboard" end className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>

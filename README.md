@@ -73,33 +73,44 @@ export default defineConfig([
 ```
 
 
-## Deployment
 
-This project is configured for deployment using **Docker** and **GitHub Actions** pushing to **AWS ECR**.
+## Development and Deployment
 
-### Docker
-The project includes a multi-stage `Dockerfile` that:
-1. Builds the React app using Node 20.
-2. Serves the static files using Nginx.
-3. Handles SPA routing via `nginx.conf`.
+### 1. Local Development (with Hot Reload)
+This project uses **Docker Compose** to provide a seamless development experience with Hot Module Replacement (HMR).
 
-To run locally with Docker:
+**To start development:**
 ```bash
-docker build -t my-admin-dashboard .
-docker run -p 80:80 my-admin-dashboard
+docker-compose up dev
 ```
+*   **URL**: `http://localhost`
+*   **How it works**: Your local code is volume-mounted into the container. 
+*   **HMR**: Changes you make in VS Code will reflect instantly in the browser thanks to the polling configuration in `vite.config.ts`.
 
-### GitHub Actions CI/CD to AWS ECR
-The pipeline in `.github/workflows/deploy.yml` automatically:
-1. Lints the code.
-2. Builds the project.
-3. Logs into Amazon ECR.
-4. Builds and pushes the Docker image with two tags: `latest` and the unique `github.sha`.
+---
 
-### Required GitHub Secrets
-To make the pipeline work, you must add the following secrets to your GitHub repository (**Settings > Secrets and variables > Actions**):
+### 2. Production Deployment (AWS ECR)
+The project is configured to build a production-grade Nginx image and push it to **Amazon ECR** via GitHub Actions.
 
-- `AWS_ACCESS_KEY_ID`: Your AWS access key.
-- `AWS_SECRET_ACCESS_KEY`: Your AWS secret key.
-- `AWS_REGION`: e.g., `us-east-1`.
-- `ECR_REPOSITORY`: The name of your ECR repository (e.g., `my-admin-dashboard`).
+#### Prerequisites
+1.  **AWS ECR Repository**: Create a private repository in your AWS Console (e.g., `my-admin-dashboard`).
+2.  **GitHub Secrets**: Add the following secrets to your GitHub repository (**Settings > Secrets and variables > Actions**):
+    *   `AWS_ACCESS_KEY_ID`: IAM user access key.
+    *   `AWS_SECRET_ACCESS_KEY`: IAM user secret key.
+    *   `AWS_REGION`: e.g., `us-east-1`.
+    *   `ECR_REPOSITORY`: Your repository name (e.g., `my-admin-dashboard`).
+
+#### The CI/CD Pipeline
+Every time you push to the `main` branch:
+1.  **Lint & Build**: GitHub Actions verifies your code and builds the production assets.
+2.  **Docker Push**: A secure Nginx image is built and pushed to your **AWS ECR** repository with both `latest` and `SHA` tags.
+
+---
+
+### 3. Manual Production Test (Local)
+To verify the production build locally using the Nginx configuration:
+```bash
+docker build -t my-admin-dashboard:prod .
+docker run -p 8080:80 my-admin-dashboard:prod
+```
+Access at `http://localhost:8080`.
