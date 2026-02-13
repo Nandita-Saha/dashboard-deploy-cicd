@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState } from 'react';
 
 interface User {
-    id: string | number;
+    id?: string | number;
     email: string;
     name: string;
     role?: string;
@@ -52,7 +52,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (users.find((u: User) => u.email === userData.email)) {
             return false; // User already exists
         }
-        const newUsers = [...users, userData];
+        const newUser = { ...userData, id: Date.now() }; // Generate unique ID
+        const newUsers = [...users, newUser];
         localStorage.setItem('users', JSON.stringify(newUsers));
         return true;
     };
