@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 interface User {
     id: string | number;
@@ -21,18 +21,19 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
+    // Lazy initialize state directly from localStorage
+    const [user, setUser] = useState<User | null>(() => {
         const savedUser = localStorage.getItem('currentUser');
-        if (savedUser) {
-            setUser(JSON.parse(savedUser));
-            setIsAuthenticated(true);
-        }
-        setLoading(false);
-    }, []);
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
+
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+        return !!localStorage.getItem('currentUser');
+    });
+
+    const [loading] = useState<boolean>(false);
+
+    // No longer need useEffect for initial load as it's handled above
 
     const login = async (email: string, password: string) => {
         const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
