@@ -11,7 +11,7 @@ router.get('/health', (req, res)=> {
    res.status(200).json({ status: 'everything is ok' });
 });
 
-const PORT = process.env.PORT ?? 8000;
+const PORT = process.env.PORT ?? 80;
 
 app.use('/', router);
 
